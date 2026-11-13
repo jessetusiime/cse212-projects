@@ -144,6 +144,18 @@ public static class SetsAndMaps
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
-        return [];
+
+        List<string> summaries = new List<string>();
+
+        foreach (var feature in featureCollection.Features)
+        {
+            string place = feature.Properties.Place ?? "Unknown location";
+            double? magnitude = feature.Properties.Mag;
+            if (magnitude.HasValue)
+            {
+                summaries.Add($"{place} - Mag {magnitude.Value}");
+            }
+        }
+        return summaries.ToArray();
     }
 }
