@@ -15,6 +15,9 @@ using Microsoft.VisualBasic.FileIO;
 
 public class Basketball
 {
+    private static string playerId;
+    private static int points;
+
     public static void Run()
     {
         var players = new Dictionary<string, int>();
@@ -23,14 +26,35 @@ public class Basketball
         reader.TextFieldType = FieldType.Delimited;
         reader.SetDelimiters(",");
         reader.ReadFields(); // ignore header row
-        while (!reader.EndOfData) {
+        while (!reader.EndOfData)
+        {
             var fields = reader.ReadFields()!;
             var playerId = fields[0];
             var points = int.Parse(fields[8]);
         }
+        
+        if (players.ContainsKey(playerId))
+        {
+            players[playerId] += points;
+        }
+        else
+        {
+            players[playerId] = points;
+        }
 
         Console.WriteLine($"Players: {{{string.Join(", ", players)}}}");
 
-        var topPlayers = new string[10];
+        var sortedPlayers = players.ToArray();
+
+    Array.Sort(sortedPlayers, (player1, player2) =>
+        player2.Value.CompareTo(player1.Value));
+
+    Console.WriteLine("Top 10 Players by Career Points");
+    Console.WriteLine("-------------------------------");
+
+    for (int i = 0; i < 10 && i < sortedPlayers.Length; i++)
+    {
+        Console.WriteLine($"{i + 1}. {sortedPlayers[i].Key}: {sortedPlayers[i].Value} points");
     }
+}
 }
